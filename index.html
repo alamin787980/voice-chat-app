@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice Chat</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#101827;
+ color:white;
+}
+header{
+ background:#17243a;
+ padding:22px;
+ text-align:center;
+ font-size:25px;
+ font-weight:bold;
+ color:#52d6c5;
+}
+.container{padding:20px;max-width:500px;margin:auto}
+.card{
+ background:#1d2b43;
+ padding:20px;
+ border-radius:16px;
+ margin:18px 0;
+}
+h2{text-align:center}
+input{
+ width:100%;padding:15px;
+ border:0;border-radius:9px;
+ margin:8px 0;font-size:16px;
+}
+button{
+ padding:14px;border:0;
+ border-radius:10px;
+ background:#20bfa9;color:white;
+ font-size:16px;font-weight:bold;
+ cursor:pointer;margin:5px;
+}
+.actions{display:flex;flex-wrap:wrap;justify-content:center}
+#messages{
+ height:220px;overflow:auto;
+ background:#101827;padding:12px;
+ border-radius:10px;
+}
+.message{
+ background:#29415e;
+ padding:10px;border-radius:10px;
+ margin:8px 0;
+}
+video{
+ width:100%;border-radius:12px;
+ background:black;
+}
+small{color:#aabbd0}
+</style>
+</head>
+<body>
+<header>💬 Voice Chat</header>
+<div class="container">
+
+<div class="card">
+<h2>Welcome to Voice Chat</h2>
+<p style="text-align:center">
+Chat with friends anytime!
+</p>
+<input id="username" placeholder="Your name">
+<button onclick="login()">Get Started</button>
+<p id="welcome"></p>
+</div>
+
+<div class="card">
+<h2>💬 Messages</h2>
+<div id="messages"></div>
+<input id="message" placeholder="Write a message...">
+<button onclick="sendMessage()">Send Message</button>
+</div>
+
+<div class="card">
+<h2>📞 Voice & Video</h2>
+<div class="actions">
+<button onclick="startMedia('audio')">🎤 Voice</button>
+<button onclick="startMedia('video')">📹 Video</button>
+<button onclick="stopMedia()">⛔ Stop</button>
+</div>
+<video id="preview" autoplay muted playsinline></video>
+<small id="status">Camera and microphone are off.</small>
+</div>
+
+</div>
+<script>
+let stream;
+
+function login(){
+ let name=document.getElementById('username').value.trim();
+ if(!name){alert('Enter your name');return;}
+ document.getElementById('welcome').innerText='Welcome, '+name+'!';
+}
+
+function sendMessage(){
+ let input=document.getElementById('message');
+ let value=input.value.trim();
+ if(!value)return;
+ let div=document.createElement('div');
+ div.className='message';
+ div.textContent=value;
+ document.getElementById('messages').appendChild(div);
+ input.value='';
+}
+
+async function startMedia(type){
+ try{
+  stream=await navigator.mediaDevices.getUserMedia({
+   audio:true,
+   video:type==='video'
+  });
+  document.getElementById('preview').srcObject=stream;
+  document.getElementById('status').innerText=
+   'Your '+type+' is active (local preview).';
+ }catch(e){
+  alert('Please allow camera and microphone access.');
+ }
+}
+
+function stopMedia(){
+ if(stream){
+  stream.getTracks().forEach(track=>track.stop());
+  stream=null;
+ }
+ document.getElementById('preview').srcObject=null;
+ document.getElementById('status').innerText='Camera and microphone are off.';
+}
+</script>
+</body>
+</html>
